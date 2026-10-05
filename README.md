@@ -122,11 +122,33 @@ cd backend
 python -m pytest tests -v
 ```
 
-### 4. Run Backend Server
+### 4. Run Backend & Frontend Locally
 
 ```bash
 cd backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-Interactive API docs will be available at: `http://localhost:8000/docs`
+Dashboard: `http://localhost:8000`  
+Interactive API Docs: `http://localhost:8000/docs`
+
+---
+
+## 🚀 Free Cloud Deployment on Render
+
+CollaborAI is fully dockerized with a production multi-stage build and includes a `render.yaml` blueprint for 1-click deployment on Render's Free Tier:
+
+1. Push this repository to GitHub.
+2. Sign in to **[Render.com](https://render.com)**.
+3. Click **New +** → **Web Service** → Select your GitHub repo `Lakhan-18/Multi_Agent_System`.
+4. Render will auto-detect the `Dockerfile` and configure:
+   - **Environment:** Docker
+   - **Plan:** Free
+   - **Health Check Path:** `/api/status`
+5. Under **Environment Variables**, add:
+   - `GEMINI_API_KEY`: Your Gemini API key (or multiple comma-separated keys: `key1,key2,key3`)
+   - `GEMINI_MODEL`: `gemini-3.5-flash-lite`
+   - `GEMINI_RATE_LIMIT_RPM`: `12`
+   - `SIMULATION_MODE`: `false`
+6. Click **Deploy Web Service**. Render will build the unified React SPA + FastAPI backend and give you a live URL (`https://collaborai.onrender.com`).
+
