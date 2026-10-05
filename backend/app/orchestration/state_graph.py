@@ -119,7 +119,10 @@ INSTRUCTIONS:
             data={
                 "workstreams_count": len(state.workstreams),
                 "tasks_count": len(state.tasks),
-                "specialists": [s.agent_name for s in activated_profiles]
+                "specialists": [s.agent_name for s in activated_profiles],
+                "specialists_profiles": [s.model_dump() for s in activated_profiles],
+                "tasks": [t.model_dump() for t in state.tasks],
+                "workstreams": [w.model_dump() for w in state.workstreams]
             }
         )
         state.execution_events.append(event)
@@ -546,11 +549,20 @@ INSTRUCTIONS:
                 )
             )
 
+        roadmap_dicts = [
+            p.model_dump() if hasattr(p, "model_dump") else p
+            for p in synthesis_output.phased_roadmap
+        ]
+        mitigation_dicts = [
+            r.model_dump() if hasattr(r, "model_dump") else r
+            for r in synthesis_output.risk_mitigation_plan
+        ]
+
         state.final_recommendation = FinalRecommendation(
             executive_summary=synthesis_output.executive_summary,
             strategic_verdict=synthesis_output.strategic_verdict,
-            phased_roadmap=synthesis_output.phased_roadmap,
-            risk_mitigation_plan=synthesis_output.risk_mitigation_plan,
+            phased_roadmap=roadmap_dicts,
+            risk_mitigation_plan=mitigation_dicts,
             attributed_claims=attributed_claims
         )
         state.is_completed = True

@@ -96,18 +96,18 @@ export const AgentGraphView: React.FC<AgentGraphViewProps> = ({
 
     // 1. Conflict edges (bold red animated tension lines between conflicting agents)
     conflicts.forEach((conflict) => {
-      if (conflict.agents_involved.length >= 2) {
-        const source = conflict.agents_involved[0];
-        const target = conflict.agents_involved[1];
-        const isResolved = conflict.status === 'resolved';
+      const isResolved = conflict.status === 'resolved';
+      for (let i = 0; i < conflict.agents_involved.length - 1; i++) {
+        const source = conflict.agents_involved[i];
+        const target = conflict.agents_involved[i + 1];
 
         list.push({
-          id: `conflict-${conflict.conflict_id}`,
+          id: `conflict-${conflict.conflict_id}-${i}`,
           source,
           target,
           sourceHandle: 'right',
           targetHandle: 'left',
-          label: isResolved ? '✓ Compromise Reached' : `⚡ ${conflict.conflict_type.replace('_', ' ')}`,
+          label: i === 0 ? (isResolved ? '✓ Compromise Reached' : `⚡ ${conflict.conflict_type.replace('_', ' ')}`) : undefined,
           animated: !isResolved,
           style: {
             stroke: isResolved ? '#10b981' : '#f43f5e',

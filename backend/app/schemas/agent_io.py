@@ -103,11 +103,17 @@ class NegotiationModerationOutput(BaseModel):
 NegotiationCompromiseOutput = NegotiationModerationOutput
 
 
+class InvalidatedFindingItem(BaseModel):
+    finding_id: str
+    invalidating_reason: str
+    impacted_agent: str
+
+
 class StaleAssumptionOutput(BaseModel):
     """Structured output evaluating stale assumptions after new findings or negotiations."""
-    invalidated_findings: List[Dict[str, str]] = Field(
+    invalidated_findings: List[InvalidatedFindingItem] = Field(
         default_factory=list,
-        description="List of {finding_id, invalidating_reason, impacted_agent}"
+        description="List of invalidated findings"
     )
     has_stale_assumptions: bool = False
 
@@ -128,14 +134,28 @@ class ClaimAttributionItem(BaseModel):
     confidence: float = Field(default=0.9)
 
 
+class RoadmapPhase(BaseModel):
+    phase: str
+    duration: str
+    actions: List[str]
+    owner: str
+
+
+class RiskMitigationItem(BaseModel):
+    risk: str
+    severity: str
+    mitigation: str
+    monitoring: str
+
+
 class SynthesisOutput(BaseModel):
     """Structured final recommendation produced by the Synthesis Agent."""
     executive_summary: str = Field(description="Executive narrative summarizing the collective decision")
     strategic_verdict: Literal["GO", "GO_WITH_CONDITIONS", "DEFER", "NO_GO", "ALTERNATIVE_SELECTED"]
-    phased_roadmap: List[Dict[str, Any]] = Field(
+    phased_roadmap: List[RoadmapPhase] = Field(
         description="Structured chronological phases (phase, timeline, actions, owner)"
     )
-    risk_mitigation_plan: List[Dict[str, Any]] = Field(
+    risk_mitigation_plan: List[RiskMitigationItem] = Field(
         description="Mitigation matrix (risk, severity, countermeasure, monitoring)"
     )
     attributed_claims: List[ClaimAttributionItem] = Field(

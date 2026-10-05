@@ -107,6 +107,18 @@ export function useRunWebSocket(runId: string | null) {
               next.is_completed = true;
               break;
             }
+            case 'WORKSTREAMS_DECOMPOSED': {
+              if (event.data?.specialists_profiles) {
+                next.active_specialists = event.data.specialists_profiles as any;
+              }
+              if (event.data?.tasks) {
+                next.tasks = event.data.tasks as any;
+              }
+              if (event.data?.workstreams) {
+                next.workstreams = event.data.workstreams as any;
+              }
+              break;
+            }
             case 'RUN_RESUMED': {
               next.is_paused_for_human = false;
               break;
@@ -131,8 +143,14 @@ export function useRunWebSocket(runId: string | null) {
       }
     }, 15000);
 
+    // Active sync polling every 2.5s to ensure complete state fidelity
+    const pollInterval = setInterval(() => {
+      refreshState();
+    }, 2500);
+
     return () => {
       clearInterval(pingInterval);
+      clearInterval(pollInterval);
       ws.close();
     };
   }, [runId, refreshState]);
