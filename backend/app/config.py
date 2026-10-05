@@ -8,9 +8,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 ENV_PATH = BASE_DIR / ".env"
 
 class Settings(BaseSettings):
-    # Gemini API Credentials
-    GEMINI_API_KEY: str = Field(default="", description="Google Gemini API Key from Google AI Studio")
-    GEMINI_MODEL: str = Field(default="gemini-2.5-flash", description="Gemini model name")
+    # Gemini API Credentials (supports single key or comma-separated keys: "key1,key2,key3")
+    GEMINI_API_KEY: str = Field(default="", description="Google Gemini API Key(s) from Google AI Studio")
+    GEMINI_MODEL: str = Field(default="gemini-3.5-flash-lite", description="Gemini model name")
+
+    @property
+    def gemini_api_keys(self) -> list[str]:
+        """Parse single key or comma-separated list of keys from GEMINI_API_KEY."""
+        if not self.GEMINI_API_KEY:
+            return []
+        return [k.strip() for k in self.GEMINI_API_KEY.split(",") if k.strip()]
     
     # Rate Limiter
     GEMINI_RATE_LIMIT_RPM: int = Field(default=12, description="Requests per minute (under 15 RPM free tier)")
